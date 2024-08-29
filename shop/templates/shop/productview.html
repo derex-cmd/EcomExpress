@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product View</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            padding: 0.5rem 1rem;
+        }
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .navbar-nav {
+            margin-right: auto;
+        }
+        .form-inline {
+            display: flex;
+            align-items: center;
+        }
+        .search-bar {
+            width: 200px;
+            margin-right: 10px;
+        }
+        .nav-item button {
+            margin-left: 10px;
+        }
+        .card-img-top {
+            height: 200px; /* Set a fixed height */
+            object-fit: cover; /* Cover the image area */
+        }
+        #scroll-to-top, #cart-button {
+            margin-left: 10px;
+        }
+        .card {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Bazar</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'shopname' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+                </li>
+            </ul>
+            <form class="form-inline ml-auto">
+                <input class="form-control mr-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success mr-2" type="button" id="scroll-to-top">Top</button>
+                <a class="nav-link text-white" href="#" id="cart-button">
+                    Cart (<span id="cart-counter">0</span>)
+                </a>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Product Details -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.product_name }}">
+            </div>
+            <div class="col-md-6">
+                <h1>{{ product.product_name }}</h1>
+                <p>{{ product.desc }}</p>
+                <p><strong>Category:</strong> {{ product.category }}</p>
+                <p><strong>Sub-category:</strong> {{ product.sub_category }}</p>
+                <p><strong>Price:</strong> ${{ product.price }}</p>
+                <button class="btn btn-primary add-to-cart" data-product-id="{{ product.product_id }}">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">© 2024 Bazar. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartButton = document.getElementById('cart-button');
+            const addToCartButton = document.querySelector('.add-to-cart');
+            const scrollToTopButton = document.getElementById('scroll-to-top');
+
+            // Initialize cart counter
+            updateCartCounter();
+
+            if (addToCartButton) {
+                addToCartButton.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Prevent other click events
+                    const productId = this.getAttribute('data-product-id');
+        
+                    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                    const productIndex = cart.findIndex(item => item.id === productId);
+        
+                    if (productIndex !== -1) {
+                        // Increment count if product already in cart
+                        cart[productIndex].count += 1;
+                    } else {
+                        // Add new product with count 1
+                        cart.push({ id: productId, count: 1 });
+                    }
+        
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    updateCartCounter();
+        
+                    alert('Item added to cart!');
+                });
+            }
+
+            function updateCartCounter() {
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                if (!Array.isArray(cart)) {
+                    cart = [];
+                }
+                const totalCount = cart.reduce((total, item) => {
+                    if (item && typeof item.count === 'number') {
+                        return total + item.count;
+                    }
+                    return total;
+                }, 0);
+                document.getElementById('cart-counter').textContent = totalCount;
+            }
+
+            // Scroll to Top Button
+            if (scrollToTopButton) {
+                scrollToTopButton.addEventListener('click', function() {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            // Optionally, update cart count on changes
+            window.addEventListener('storage', updateCartCounter);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .modal-dialog {
+            max-width: 500px;
+            margin: 30px auto;
+        }
+        .container {
+            max-width: 600px;
+        }
+        .navbar-nav {
+            margin-left: auto;
+        }
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{% url 'shopname' %}">Bazar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'shopname' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+                </li>
+                <!-- Add other nav items here -->
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">FAQ</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Contact Form -->
+    <div class="container mt-5">
+        <h1 class="text-center">Contact Us</h1>
+        <form id="contact-form" method="post" action="{% url 'contact' %}" class="mx-auto">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+    </div>
+
+    <!-- Success/Error Modal -->
+    <div class="modal fade" id="responseModal" tabindex="-1" role="dialog" aria-labelledby="responseModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="responseModalLabel">Message Status</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="responseModalBody">
+                    <!-- Response message will be inserted here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#contact-form').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#responseModalLabel').text('Success');
+                            $('#responseModalBody').html('<p>Your message has been sent successfully!</p>');
+                        } else {
+                            $('#responseModalLabel').text('Error');
+                            let errors = '<ul>';
+                            $.each(response.errors, function(field, messages) {
+                                $.each(messages, function(index, message) {
+                                    errors += '<li>' + message + '</li>';
+                                });
+                            });
+                            errors += '</ul>';
+                            $('#responseModalBody').html('<p>There were errors in your form:</p>' + errors);
+                        }
+                        $('#responseModal').modal('show');
+                    },
+                    error: function(xhr) {
+                        $('#responseModalLabel').text('Error');
+                        $('#responseModalBody').html('<p>An unexpected error occurred. Please try again later.</p>');
+                        $('#responseModal').modal('show');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
