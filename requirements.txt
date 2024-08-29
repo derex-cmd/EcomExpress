@@ -1,0 +1,29 @@
+### `requirements.txt`
+
+```plaintext
+# Django framework for web development
+Django>=3.2,<4.0
+
+# Package for managing media files
+Pillow>=8.2.0
+
+# Database backend (if using PostgreSQL)
+psycopg2>=2.9.1
+
+# Environment variable management
+django-environ>=0.4.5
+
+# Django tool for human-readable formatting of model fields
+django-humanize>=0.0.9
+
+# Django extension for additional features
+django-extensions>=3.1.0
+
+# Tool for serving static files in development
+whitenoise>=5.3.0
+
+# Optional: Debug toolbar for development
+django-debug-toolbar>=3.2.1
+
+# Optional: For handling CORS (Cross-Origin Resource Sharing) in API development
+django-cors-headers>=3.7.0
