@@ -1,6 +1,5 @@
 ### `requirements.txt`
 
-```plaintext
 # Django framework for web development
 Django>=3.2,<4.0
 
